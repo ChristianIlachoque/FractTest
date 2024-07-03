@@ -17,6 +17,8 @@ To run this project in your local environment, you need to have the following pr
 ## Setting and execute
 
 ### Backend (Spring Boot)
+- create dabatase on Mysql : fractal
+- Set username and password to database connection
 - cd fractal-backend
 - open on editor
 - run on IDE
