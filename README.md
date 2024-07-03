@@ -1,6 +1,6 @@
 # FractTest
 
-## Project's Structure
+## Project Structure
 
 - **fractal-backend**: Contains the server code, implemented with Spring Boot.
 - **fractal-frontend**: Contains the client code, implemented with React.
