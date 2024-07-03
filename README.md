@@ -17,13 +17,13 @@ To run this project in your local environment, you need to have the following pr
 ## Setting and execute
 
 ### Backend (Spring Boot)
-cd fractal-backend
-open on editor
-run on IDE
-can se documentation in Swagger at [hppt://localhost:8080](http://localhost:8080/swagger-ui.html)
+- cd fractal-backend
+- open on editor
+- run on IDE
+- can se documentation in Swagger at [hppt://localhost:8080](http://localhost:8080/swagger-ui.html)
 
 ### Frontend (React)
-cd fractal-frontend
-npm i
-npm run dev
-open in http://localhost:5173/
+- cd fractal-frontend
+- npm i
+- npm run dev
+- open in http://localhost:5173/
