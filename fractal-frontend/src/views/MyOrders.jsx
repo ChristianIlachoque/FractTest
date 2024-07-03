@@ -65,12 +65,7 @@ export const MyOrders = () => {
                                         <td>{order.products.length}</td>
                                         <td>{order.products.reduce((total, p) => ((p.price * p.quantity) + total), 0)}</td>
                                         <td className="d-flex gap-2">
-                                            <Link
-                                                className="btn btn-warning"
-                                                style={{
-                                                    pointerEvents: order.status === 'COMPLETED' ? 'none' : 'auto', backgroundColor: order.status === 'COMPLETED' ? '#ffffdf' : '#ffc107'
-                                                }} to={`/add-order/${order.id}`}
-                                            >
+                                            <Link className="btn btn-warning" to={`/add-order/${order.id}`}>
                                                 Edit
                                             </Link>
                                             <button className="btn btn-danger" onClick={() => handleDelete(order.id)}>Delete</button>

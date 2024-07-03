@@ -68,6 +68,9 @@ export const AddEditOrder = () => {
             }))
         }
         if (id) {
+            if(currentOrder.status == "COMPLETED") {
+                return
+            };
             await startUpdatingOrder(id, dataOrder);
         } else {
             await startSavingOrder(dataOrder);
@@ -117,7 +120,7 @@ export const AddEditOrder = () => {
                 <label># Products</label>
                 <input className='form-control' type="text" value={order?.products?.length} disabled />
                 <label>Final Price</label>
-                <input className='form-control' type="text" value={id ? order?.products?.reduce((acc, p) => acc + p.price * p.quantity, 0) : order?.finalPrice} disabled />
+                <input className='form-control' type="text" value={id ? order?.products?.reduce((acc, p) => acc + p.price * p.quantity, 0) : order?.products?.reduce((acc, p) => acc + p.price * p.quantity, 0)} disabled />
                 <label>Status</label>
                 <select className='form-select' value={order.status} onChange={handleStatusChange}>
                     <option value="">Seleccione estado</option>
@@ -148,7 +151,7 @@ export const AddEditOrder = () => {
                             <td>{product.name}</td>
                             <td>{product.price}</td>
                             <td>{product.quantity}</td>
-                            <td>{id ? product.price * product.quantity : product.totalPrice}</td>
+                            <td>{id ? product.price * product.quantity : product.price * product.quantity}</td>
                             <td className="d-flex gap-2">
                                 <button className='btn btn-warning' onClick={() => handleEditProduct(product)}>Edit</button>
                                 <button className="btn btn-danger" onClick={() => handleRemoveProduct(product.id)}>Remove</button>
@@ -159,7 +162,7 @@ export const AddEditOrder = () => {
             </table>
             <hr />
             <div className="d-flex justify-content-around">
-                <button className='btn btn-primary' onClick={handleSaveOrder} >{id ? 'Save Order' : 'Create Order'}</button>
+                <button className='btn btn-primary' onClick={handleSaveOrder} disabled={currentOrder.status == "COMPLETED"}>{id ? 'Save Order' : 'Create Order'}</button>
                 <Link className="btn btn-info" to={"/"}>Cancel</Link>
             </div>
 
