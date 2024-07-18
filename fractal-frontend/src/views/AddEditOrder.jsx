@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useOrderStore } from '../hooks/useOrderStore';
 import { useProductStore } from '../hooks/useProductStore';
@@ -17,7 +17,7 @@ export const AddEditOrder = () => {
         finalPrice: 0
     });
     const { startSavingOrder, startUpdatingOrder, startGetOrderById, currentOrder } = useOrderStore();
-    const [productSelecet, setProductSelected] = useState();
+    const [productSelecet, setProductSelected] = useState({ id: "", name: "", price: "", quantity: "" });
     const { startLoadingProducts } = useProductStore();
 
     const handleAddProduct = () => {
@@ -25,6 +25,7 @@ export const AddEditOrder = () => {
     }
     const handleEditProduct = (product) => {
         setProductSelected(product);
+        console.log("e p", product)
         setIsProductModalOpen(true);
     }
     const handleRemoveProduct = (id) => {
@@ -40,20 +41,25 @@ export const AddEditOrder = () => {
         })
     }
 
-    const handleSaveChangesProduct = (product) => {
+    const handleSaveChangesProduct = (id, product) => {
+        console.log("update 1 prod", product)
+        const updateProducts = order.products.map(p => {
+            if (p.id === id) {
+                return {
+                    ...p,
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: product.quantity,
+                }
+            }
+            return p;
+        })
+        console.log("update prod", updateProducts);
+
         setOrder({
             ...order,
-            products: order.products.map(p => {
-                if (p.id == product.id) {
-                    return {
-                        ...p,
-                        name: product.name,
-                        price: product.price,
-                        quantity: product.quantity,
-                    }
-                }
-                return p;
-            }),
+            products: updateProducts
         })
     }
 
@@ -67,10 +73,11 @@ export const AddEditOrder = () => {
                 quantity: Number(p.quantity)
             }))
         }
+        console.log("new data to send", dataOrder);
         if (id) {
-            if(currentOrder.status == "COMPLETED") {
+            if (currentOrder.status == "COMPLETED") {
                 return
-            };
+            }
             await startUpdatingOrder(id, dataOrder);
         } else {
             await startSavingOrder(dataOrder);
@@ -169,7 +176,7 @@ export const AddEditOrder = () => {
             <ProductModal isOpen={isProductModalOpen}
                 onRequestClose={() => {
                     setIsProductModalOpen(false);
-                    //setProductSelected(null);
+                    setProductSelected(null);
                 }}
                 onSave={handleSaveProduct}
                 onSaveChanges={handleSaveChangesProduct}

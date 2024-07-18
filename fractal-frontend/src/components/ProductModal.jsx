@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import Modal from 'react-modal';
 import { useProductStore } from "../hooks/useProductStore";
@@ -6,13 +7,13 @@ const customStyles = {
     content: {
         width: '600px',
         height: '480px',
-        margin: 'auto', // Center the modal horizontally and vertically
+        margin: 'auto',
         top: '50%',
         left: '50%',
         right: 'auto',
         bottom: 'auto',
         transform: 'translate(-50%, -50%)',
-        padding: '20px', // Padding for internal spacing
+        padding: '20px',
     },
 };
 
@@ -26,10 +27,12 @@ export const ProductModal = ({ isOpen, onRequestClose, onSave, onSaveChanges, pr
         quantity: 1,
         totalPrice: 0,
     });
+    const [idProductEditing, setIdProductEditing] = useState(null);
 
     useEffect(() => {
         if (product) {
             setProductData(product);
+            console.log("p m", product);
         }
     }, [product]);
 
@@ -46,7 +49,8 @@ export const ProductModal = ({ isOpen, onRequestClose, onSave, onSaveChanges, pr
     };
 
     const handleSaveChanges = () => {
-        onSaveChanges(productData);
+        console.log("s c pr", productData);
+        onSaveChanges(idProductEditing, productData);
         setProductData({
             id: '',
             name: '',
@@ -54,13 +58,21 @@ export const ProductModal = ({ isOpen, onRequestClose, onSave, onSaveChanges, pr
             quantity: 1,
             totalPrice: 0,
         });
+        setIdProductEditing(null);
         onRequestClose();
     }
 
     const onChangeProduct = (e) => {
-        setProductData({
+        console.log("m change product", {
             ...productData,
             id: e.target.value,
+            name: products.find(p => p.id == e.target.value).name,
+            price: products.find(p => p.id == e.target.value).price
+        })
+        setIdProductEditing(productData.id);
+        setProductData({
+            ...productData,
+            id: Number(e.target.value),
             name: products.find(p => p.id == e.target.value).name,
             price: products.find(p => p.id == e.target.value).price
         })
@@ -78,7 +90,7 @@ export const ProductModal = ({ isOpen, onRequestClose, onSave, onSaveChanges, pr
             <h2>{product ? 'Edit Product' : 'Add Product'}</h2>
             <form>
                 <label className='form-label'>Name</label>
-                <select className='form-select' onChange={onChangeProduct} defaultValue={productData.id}>
+                <select className='form-select' onChange={onChangeProduct} value={productData.id}>
                     <option value="">Seleccione un Producto</option>
                     {
                         products.map(product => (
