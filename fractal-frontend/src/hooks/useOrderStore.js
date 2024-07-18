@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { onDeleteOrder, onLoadOrders, onGetOrderById, onAddNewOrder } from "../store/orders/orderSlice";
+import { onDeleteOrder, onLoadOrders, onGetOrderById, onAddNewOrder, onResetCurrentOrder } from "../store/orders/orderSlice";
 
 const URL_BACKEND = import.meta.env.VITE_BACKEND_URL
 const API_URL = `${URL_BACKEND}/api/order`
@@ -32,7 +32,7 @@ export const useOrderStore = () => {
         try {
             const res = await fetch(API_URL, {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(order)
@@ -48,7 +48,7 @@ export const useOrderStore = () => {
         try {
             const res = await fetch(`${API_URL}/${id}`, {
                 method: 'PUT',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(order)
@@ -65,7 +65,7 @@ export const useOrderStore = () => {
         try {
             await fetch(`${API_URL}/${id}`, {
                 method: 'DELETE',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json'
                 }
             });
@@ -73,6 +73,10 @@ export const useOrderStore = () => {
         } catch (error) {
             console.log("Error saving order");
         }
+    }
+
+    const startResetingCurrentOrder = async () => {
+        dispatch(onResetCurrentOrder());
     }
 
     return {
@@ -83,5 +87,6 @@ export const useOrderStore = () => {
         startSavingOrder,
         startUpdatingOrder,
         currentOrder,
+        startResetingCurrentOrder,
     }
 }

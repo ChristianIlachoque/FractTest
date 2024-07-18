@@ -18,7 +18,7 @@ const customStyles = {
 };
 
 
-export const ProductModal = ({ isOpen, onRequestClose, onSave, onSaveChanges, product }) => {
+export const ProductModal = ({ isOpen, onRequestClose, onSave, product }) => {
     const { products } = useProductStore();
     const [productData, setProductData] = useState({
         id: '',
@@ -32,12 +32,15 @@ export const ProductModal = ({ isOpen, onRequestClose, onSave, onSaveChanges, pr
     useEffect(() => {
         if (product) {
             setProductData(product);
-            console.log("p m", product);
         }
     }, [product]);
 
     const handleSave = () => {
-        onSave(productData);
+        if (idProductEditing) {
+            onSave(idProductEditing, productData);
+        } else {
+            onSave(null, productData);
+        }
         setProductData({
             id: '',
             name: '',
@@ -46,30 +49,11 @@ export const ProductModal = ({ isOpen, onRequestClose, onSave, onSaveChanges, pr
             totalPrice: 0,
         });
         onRequestClose();
-    };
-
-    const handleSaveChanges = () => {
-        console.log("s c pr", productData);
-        onSaveChanges(idProductEditing, productData);
-        setProductData({
-            id: '',
-            name: '',
-            price: 0,
-            quantity: 1,
-            totalPrice: 0,
-        });
         setIdProductEditing(null);
-        onRequestClose();
     }
 
     const onChangeProduct = (e) => {
-        console.log("m change product", {
-            ...productData,
-            id: e.target.value,
-            name: products.find(p => p.id == e.target.value).name,
-            price: products.find(p => p.id == e.target.value).price
-        })
-        setIdProductEditing(productData.id);
+        if (product) setIdProductEditing(productData.id);
         setProductData({
             ...productData,
             id: Number(e.target.value),
@@ -78,6 +62,7 @@ export const ProductModal = ({ isOpen, onRequestClose, onSave, onSaveChanges, pr
         })
     }
     const onChangeQuantity = (e) => {
+        if (product && idProductEditing === null) setIdProductEditing(productData.id);
         setProductData({
             ...productData,
             quantity: e.target.value,
@@ -123,7 +108,7 @@ export const ProductModal = ({ isOpen, onRequestClose, onSave, onSaveChanges, pr
             </form>
             <br />
             <div className="d-flex justify-content-center">
-                <button className="btn btn-primary" onClick={product ? handleSaveChanges : handleSave}>{product ? "Save Changes" : "Save"}</button>
+                <button className="btn btn-primary" onClick={handleSave}>{product ? "Save Changes" : "Save"}</button>
             </div>
         </Modal>
     );

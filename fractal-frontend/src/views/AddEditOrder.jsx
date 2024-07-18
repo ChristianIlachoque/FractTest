@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useOrderStore } from '../hooks/useOrderStore';
 import { useProductStore } from '../hooks/useProductStore';
 import { ProductModal } from '../components/ProductModal';
@@ -7,6 +7,9 @@ import { ProductModal } from '../components/ProductModal';
 export const AddEditOrder = () => {
     const navigate = useNavigate()
     const { id } = useParams();
+    const { startLoadingProducts } = useProductStore();
+    const { startSavingOrder, startUpdatingOrder, startGetOrderById, currentOrder, startResetingCurrentOrder } = useOrderStore();
+    const [productSelected, setProductSelected] = useState();
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
     const [order, setOrder] = useState({
         id: "",
@@ -16,50 +19,40 @@ export const AddEditOrder = () => {
         products: [],
         finalPrice: 0
     });
-    const { startSavingOrder, startUpdatingOrder, startGetOrderById, currentOrder } = useOrderStore();
-    const [productSelecet, setProductSelected] = useState({ id: "", name: "", price: "", quantity: "" });
-    const { startLoadingProducts } = useProductStore();
 
-    const handleAddProduct = () => {
-        setIsProductModalOpen(true);
-    }
     const handleEditProduct = (product) => {
         setProductSelected(product);
-        console.log("e p", product)
         setIsProductModalOpen(true);
     }
+
     const handleRemoveProduct = (id) => {
         setOrder({
             ...order,
             products: order.products.filter(p => p.id != id)
         })
     }
-    const handleSaveProduct = (product) => {
-        setOrder({
-            ...order,
-            products: [...order.products, product],
-        })
-    }
 
-    const handleSaveChangesProduct = (id, product) => {
-        console.log("update 1 prod", product)
-        const updateProducts = order.products.map(p => {
-            if (p.id === id) {
-                return {
-                    ...p,
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    quantity: product.quantity,
+    const handleSaveProduct = (id, product) => {
+        let updateProducts = [...order.products];
+        if (id) {
+            updateProducts = order.products.map(p => {
+                if (p.id === id) {
+                    return {
+                        ...p,
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        quantity: product.quantity,
+                    }
                 }
-            }
-            return p;
-        })
-        console.log("update prod", updateProducts);
-
+                return p;
+            })
+        } else {
+            updateProducts = [...order.products, product];
+        }
         setOrder({
             ...order,
-            products: updateProducts
+            products: updateProducts,
         })
     }
 
@@ -73,9 +66,8 @@ export const AddEditOrder = () => {
                 quantity: Number(p.quantity)
             }))
         }
-        console.log("new data to send", dataOrder);
         if (id) {
-            if (currentOrder.status == "COMPLETED") {
+            if (currentOrder.status === "COMPLETED") {
                 return
             }
             await startUpdatingOrder(id, dataOrder);
@@ -85,6 +77,14 @@ export const AddEditOrder = () => {
         navigate("/")
     }
 
+    const handleCancel = () => {
+        startResetingCurrentOrder();
+        navigate("/");
+    }
+
+    const handleStatusChange = (e) => {
+        setOrder({ ...order, status: e.target.value });
+    };
 
     useEffect(() => {
         startLoadingProducts();
@@ -106,10 +106,6 @@ export const AddEditOrder = () => {
             });
         }
     }, [currentOrder])
-
-    const handleStatusChange = (e) => {
-        setOrder({ ...order, status: e.target.value });
-    };
 
     return (
         <div className='container' >
@@ -137,7 +133,9 @@ export const AddEditOrder = () => {
                 </select>
             </form>
             <br />
-            <button className='btn btn-success' onClick={handleAddProduct}>Add Product</button>
+            <button className='btn btn-success' onClick={() => setIsProductModalOpen(true)}>
+                Add Product
+            </button>
             <br />
             <br />
             <table className='table'>
@@ -170,17 +168,17 @@ export const AddEditOrder = () => {
             <hr />
             <div className="d-flex justify-content-around">
                 <button className='btn btn-primary' onClick={handleSaveOrder} disabled={currentOrder.status == "COMPLETED"}>{id ? 'Save Order' : 'Create Order'}</button>
-                <Link className="btn btn-info" to={"/"}>Cancel</Link>
+                <button className="btn btn-info" onClick={handleCancel}>Cancel</button>
             </div>
 
-            <ProductModal isOpen={isProductModalOpen}
+            <ProductModal
+                isOpen={isProductModalOpen}
                 onRequestClose={() => {
                     setIsProductModalOpen(false);
                     setProductSelected(null);
                 }}
                 onSave={handleSaveProduct}
-                onSaveChanges={handleSaveChangesProduct}
-                product={productSelecet}
+                product={productSelected}
             />
         </div >
     );

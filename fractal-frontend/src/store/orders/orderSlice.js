@@ -22,6 +22,9 @@ export const orderSlice = createSlice({
         onDeleteOrder: (state, { payload }) => {
             state.orders = state.orders.filter(order => order.id !== payload)
         },
+        onResetCurrentOrder: (state, { payload }) => {
+            state.currentOrder = {}
+        }
     }
 })
 
@@ -31,4 +34,5 @@ export const {
     onDeleteOrder,
     onGetOrderById,
     currentOrder,
+    onResetCurrentOrder,
 } = orderSlice.actions;

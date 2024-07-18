@@ -6,10 +6,6 @@ import { useOrderStore } from "../hooks/useOrderStore";
 export const MyOrders = () => {
     const { orders, startDeletingOrder, startLoadingOrders } = useOrderStore();
 
-    useEffect(() => {
-        startLoadingOrders()
-    }, []);
-
     const handleDelete = (id) => {
         Swal.fire({
             title: `<strong>Delete Orden</strong>`,
@@ -33,6 +29,10 @@ export const MyOrders = () => {
             }
         });
     };
+
+    useEffect(() => {
+        startLoadingOrders()
+    }, []);
 
     return (
         <div className="container">
